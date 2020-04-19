@@ -1,7 +1,7 @@
 import pygame
 import os
 import Objects
-import ScreenEngine
+import ScreenEngine as SE
 import Logic
 import Service
 
@@ -26,19 +26,23 @@ base_stats = {
 
 
 def create_game(sprite_size, is_new):
+    """
+    game initialization func, sprite_size - size of hero,
+    is_new - boolean var (check which level game needs to process)
+    """
     global hero, engine, drawer, iteration
     if is_new:
-        hero = Objects.Hero(base_stats, Service.create_sprite(
-            os.path.join("texture", "Hero.png"), sprite_size))
-        engine = Logic.GameEngine()
-        Service.service_init(sprite_size)
-        Service.reload_game(engine, hero)
-        with ScreenEngine as SE:
-            drawer = SE.GameSurface((640, 480), pygame.SRCALPHA, (0, 480),
-                                    SE.ProgressBar((640, 120), (640, 0),
-                                                   SE.InfoWindow((160, 600), (50, 50),
-                                                                 SE.HelpWindow((700, 500), pygame.SRCALPHA, (0, 0),
-                                                                               SE.ScreenHandle(
+        hero = Objects.Hero(base_stats, Service.create_sprite(  # creating hero object with base stats with size sprite size
+            os.path.join("texture", "Hero.png"), sprite_size))  # and sprite = hero.png from texture dir
+        engine = Logic.GameEngine()  # instance of game engine that produces game logic (hero movement, level map, objects)
+        Service.service_init(sprite_size)  # Creates objects and map dependent on yaml objects with sprite size of objects and hero
+        Service.reload_game(engine, hero) # Loads game on the first level, add objects map and hero, places hero on [1,1]
+        # ScreenEngine is an angine that responsible for to draw objects on surface
+        drawer = SE.GameSurface((640, 480), pygame.SRCALPHA, (0, 480),  # Chain of resp of drawing
+                                SE.ProgressBar((640, 120), (640, 0),
+                                                SE.InfoWindow((160, 600), (50, 50),
+                                                            SE.HelpWindow((700, 500), pygame.SRCALPHA, (0, 0),
+                                                                            SE.ScreenHandle(
                                                                                    (0, 0))
                                                                                ))))
 
@@ -56,7 +60,7 @@ def create_game(sprite_size, is_new):
 
 
 size = 60
-create_game(size, True)
+create_game(size, True)  # creates game with sprite_size = size
 
 while engine.working:
 
